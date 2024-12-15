@@ -10,8 +10,13 @@ app = Flask(__name__)
 
 # Load the pre-trained number plate recognition model
 model = None
-with open("model.pkl", "rb") as file:
-    model = pickle.load(file)  # Load the model (ensure compatibility with this library)
+MODEL_PATH = "./model.pkl"
+
+if not os.path.exists(MODEL_PATH):
+    raise FileNotFoundError(f"Model file not found at {MODEL_PATH}")
+
+with open(MODEL_PATH, "rb") as file:
+    model = pickle.load(file)
 
 # Configure upload folder and allowed extensions
 UPLOAD_FOLDER = './uploads'
@@ -84,4 +89,6 @@ def process_video(video_path):
     return recognized_plates
 
 if __name__ == "__main__":
-    app.run(debug=True, port=8000)
+    # For Render, use host='0.0.0.0' and port as an environment variable
+    port = int(os.environ.get("PORT", 8000))
+    app.run(debug=True, host='0.0.0.0', port=port)
